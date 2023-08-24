@@ -1,8 +1,10 @@
-#include <includes.hpp>
+#pragma once
 
 #pragma comment(lib, "libcurl.lib")
 
 #define CURL_STATICLIB 
+
+#include "common.hpp"
 
 struct channel_struct
 {

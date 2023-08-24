@@ -11,9 +11,8 @@
 #endif
 
 #include <auth.hpp>
+#include <utils.hpp>
 #include <strsafe.h> 
-#include <windows.h>
-#include <string>
 #include <stdio.h>
 #include <iostream>
 
@@ -32,10 +31,7 @@
 #pragma comment(lib, "httpapi.lib")
 
 #include <cstdio>
-#include <iostream>
-#include <memory>
 #include <stdexcept>
-#include <string>
 #include <array>
 
 #include <functional>
