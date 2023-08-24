@@ -3,6 +3,7 @@
 .vscode/*
 !.vscode/launch.json
 .cache/
+*.code-workspace
 
 # output directory
 _builds/
