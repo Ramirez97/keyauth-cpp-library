@@ -1221,33 +1221,45 @@ std::string get_str_between_two_str(const std::string& s,
 }
 
 std::string KeyAuth::api::req(std::string data, std::string url) {
-    CURL* curl = curl_easy_init();
-    if (!curl)
-        return XorStr("null");
+    // CURL* curl = curl_easy_init();
+    // if (!curl)
+    //     return XorStr("null");
 
     std::string to_return;
     std::string headers;
 
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
+    try
+    {
+            cpr::Response response = cpr::Post(cpr::Url(url.c_str()),
+                                        cpr::Header{{"Content-Type", "application/x-www-form-urlencoded"}},
+                                        cpr::Body{{data.c_str()}}
+                                      );
+    }
+    catch (std::exception& error)
+    {
+        std::cerr << "Request Failed, ERROR: " << error.what() << std::endl;
+    }
 
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1);
+    // curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
 
-    curl_easy_setopt(curl, CURLOPT_NOPROXY, XorStr( "keyauth.win" ) );
+    // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1);
 
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
+    // curl_easy_setopt(curl, CURLOPT_NOPROXY, XorStr( "keyauth.win" ) );
 
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+    // curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
 
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &to_return);
+    // curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
 
-    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, header_callback);
-    curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headers);
+    // curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+    // curl_easy_setopt(curl, CURLOPT_WRITEDATA, &to_return);
 
-    auto code = curl_easy_perform(curl);
+    // curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, header_callback);
+    // curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headers);
 
-    if (code != CURLE_OK)
-        error(curl_easy_strerror(code));
+    // auto code = curl_easy_perform(curl);
+
+    // if (code != CURLE_OK)
+    //     error(curl_easy_strerror(code));
 
     return to_return;
 }
