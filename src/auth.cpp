@@ -1221,33 +1221,22 @@ std::string get_str_between_two_str(const std::string& s,
 }
 
 std::string KeyAuth::api::req(std::string data, std::string url) {
-    CURL* curl = curl_easy_init();
-    if (!curl)
-        return XorStr("null");
+   
+   try
+	{
+		http::Request request{ url.c_str() };
+		const auto [status, headerFields, body] = request.send(
+			"POST",
+            data.c_str(),
+			{ {"Content-Type", "application/x-www-form-urlencoded"} },
+			2500ms);
 
-    std::string to_return;
-    std::string headers;
-
-    curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1);
-
-    curl_easy_setopt(curl, CURLOPT_NOPROXY, XorStr( "keyauth.win" ) );
-
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L);
-
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
-
-    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
-    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &to_return);
-
-    curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, header_callback);
-    curl_easy_setopt(curl, CURLOPT_HEADERDATA, &headers);
-
-    auto code = curl_easy_perform(curl);
-
-    if (code != CURLE_OK)
-        error(curl_easy_strerror(code));
+		// std::cout << std::string{ body.begin(), body.end() } << std::endl;
+	}
+	catch (std::exception& e)
+	{
+		std::cerr << "Request Failed, ERROR: " << e.what() << std::endl;
+	}
 
     return to_return;
 }

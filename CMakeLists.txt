@@ -14,7 +14,7 @@ set(SRC_DIR "${PROJECT_SOURCE_DIR}/src")
 # Fetch Modules
 message("\nFetching Modules")
 include(scripts/build_options.cmake)
-include(scripts/cpr.cmake)
+include(scripts/http_request.cmake)
 include(scripts/json.cmake)
 
 # KeyAuth Library
@@ -43,6 +43,7 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
 target_include_directories(${PROJECT_NAME} PRIVATE
     "${SRC_DIR}"
     "${json_SOURCE_DIR}/single_include"
+    "${http_request_SOURCE_DIR}/include"
 ) 
 
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
@@ -55,8 +56,6 @@ endif()
 
 
 target_link_libraries(${PROJECT_NAME} PRIVATE "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
-
-target_link_libraries(${PROJECT_NAME} PRIVATE cpr)
 
 # Warnings as errors
 set_property(TARGET ${PROJECT_NAME} PROPERTY COMPILE_WARNING_AS_ERROR OFF)
