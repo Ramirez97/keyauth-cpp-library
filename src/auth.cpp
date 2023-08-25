@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <atlstr.h>
 
-#pragma comment(lib, "libcurl.lib")
+//#pragma comment(lib, "libcurl.lib")
 #pragma comment(lib, "rpcrt4.lib")
 #pragma comment(lib, "httpapi.lib")
 
@@ -83,15 +83,15 @@ void KeyAuth::api::init()
     enckey = sentKey + XorStr("-") + secret;
 
     std::string hash = checksum();
-    CURL* curl = curl_easy_init();
+    //CURL* curl = curl_easy_init();
     auto data =
         XorStr("type=init") +
         XorStr("&ver=") + version +
         XorStr("&hash=") + hash +
         XorStr("&enckey=") + sentKey +
-        XorStr("&name=") + curl_easy_escape(curl, name.c_str(), 0) +
+        XorStr("&name=") + name.c_str() +
         XorStr("&ownerid=") + ownerid;
-    curl_easy_cleanup(curl);
+    //curl_easy_cleanup(curl);
 
     auto response = req(data, url);
 
@@ -1064,17 +1064,44 @@ std::string KeyAuth::api::webhook(std::string id, std::string params, std::strin
 {
     checkInit();
 
-    CURL *curl = curl_easy_init();
-    auto data =
-        XorStr("type=webhook") +
-        XorStr("&webid=") + id +
-        XorStr("&params=") + curl_easy_escape(curl, params.c_str(), 0) +
-        XorStr("&body=") + curl_easy_escape(curl, body.c_str(), 0) +
-        XorStr("&conttype=") + contenttype +
-        XorStr("&sessionid=") + sessionid +
-        XorStr("&name=") + name +
-        XorStr("&ownerid=") + ownerid;
-    curl_easy_cleanup(curl);
+    try
+        {
+            http::Request request{ url.c_str() };
+            const auto [status, headerFields, body] = request.send(
+                "GET",
+                params.c_str(),
+                { {"Content-Type", "application/x-www-form-urlencoded"} },
+                2500ms);
+
+            // std::cout << std::string{ body.begin(), body.end() } << std::endl;
+        }
+        catch (std::exception& e)
+        {
+            std::cerr << "Request Failed, ERROR: " << e.what() << std::endl;
+        }
+
+    auto data = 
+             XorStr("type=webhook") +
+             XorStr("&webid=") + id +
+             XorStr("&params=") + params.c_str() +
+             XorStr("&body=") + body.c_str() +
+             XorStr("&conttype=") + contenttype +
+             XorStr("&sessionid=") + sessionid +
+             XorStr("&name=") + name +
+             XorStr("&ownerid=") + ownerid;
+
+
+    // CURL *curl = curl_easy_init();
+    // auto data =
+    //     XorStr("type=webhook") +
+    //     XorStr("&webid=") + id +
+    //     XorStr("&params=") + curl_easy_escape(curl, params.c_str(), 0) +
+    //     XorStr("&body=") + curl_easy_escape(curl, body.c_str(), 0) +
+    //     XorStr("&conttype=") + contenttype +
+    //     XorStr("&sessionid=") + sessionid +
+    //     XorStr("&name=") + name +
+    //     XorStr("&ownerid=") + ownerid;
+    // curl_easy_cleanup(curl);
     auto response = req(data, url);
     auto json = response_decoder.parse(response);
     std::string message = json[(XorStr("message"))];
@@ -1222,6 +1249,8 @@ std::string get_str_between_two_str(const std::string& s,
 
 std::string KeyAuth::api::req(std::string data, std::string url) {
    
+  std::string to_return;
+
    try
 	{
 		http::Request request{ url.c_str() };

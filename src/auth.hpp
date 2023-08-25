@@ -1,8 +1,8 @@
 #pragma once
 
-#pragma comment(lib, "libcurl.lib")
-
-#define CURL_STATICLIB 
+//#pragma comment(lib, "libcurl.lib")
+//
+//#define CURL_STATICLIB 
 
 #include "common.hpp"
 
