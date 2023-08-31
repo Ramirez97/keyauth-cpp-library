@@ -13,7 +13,6 @@ set(SRC_DIR "${PROJECT_SOURCE_DIR}/src")
 
 # Fetch Modules
 message("\nFetching Modules")
-include(scripts/build_options.cmake)
 include(scripts/cpr.cmake)
 include(scripts/json.cmake)
 
